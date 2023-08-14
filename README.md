@@ -1,3 +1,15 @@
-# Northcoders News API
+## To run this project locally
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+First create the databases:
+```
+npm run setup-dbs
+```
+
+Then you will need to create the .env files:
+
+```
+echo PGDATABASE=nc_news >> .env.development
+
+echo PGDATABASE=nc_news_test >> .env.test
+```
+
