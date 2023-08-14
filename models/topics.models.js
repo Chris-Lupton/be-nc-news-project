@@ -1,4 +1,3 @@
-const { deepStrictEqual } = require('assert')
 const db = require('../db/connection')
 
 exports.fetchTopics = async () => {
