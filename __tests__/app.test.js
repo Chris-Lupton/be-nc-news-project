@@ -13,9 +13,6 @@ afterAll(() => {
 })
 
 describe('/api/topics', () => {
-    test("200: Should return a status 200", () => {
-        return request(app).get("/api/topics").expect(200)
-    })
     test('200: Should respond with an array of all topcis with properties: slug and description', async () => {
         const { body: { topics } } = await request(app)
             .get("/api/topics")
@@ -24,6 +21,20 @@ describe('/api/topics', () => {
         topics.forEach(topic => {
             expect(topic).toHaveProperty("slug", expect.any(String))
             expect(topic).toHaveProperty("description", expect.any(String))
+        })
+    })
+})
+
+describe('/api', () => {
+    test('should return an object with all the available endpoints of the api', async () => {
+        const { body: { endpoints } } = await request(app)
+            .get('/api')
+            .expect(200)
+        expect(endpoints).toBeInstanceOf(Object)
+        expect(endpoints).toHaveProperty("GET /api")
+        expect(endpoints).toHaveProperty("GET /api/topics")
+        Object.values(endpoints).forEach(value => {
+            expect(value).toHaveProperty('description', expect.any(String))
         })
     })
 })
