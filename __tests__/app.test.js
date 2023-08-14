@@ -38,3 +38,31 @@ describe('/api', () => {
         })
     })
 })
+
+describe('/api/articles/:article_id', () => {
+    test('200: Should respond with the article matching the requested id', async () => {
+        const { body: { article } } = await request(app)
+            .get('/api/articles/1')
+            .expect(200)
+        expect(article).toHaveProperty('article_id', 1)
+        expect(article).toHaveProperty('author', "butter_bridge")
+        expect(article).toHaveProperty('title', 'Living in the shadow of a great man')
+        expect(article).toHaveProperty('body', "I find this existence challenging")
+        expect(article).toHaveProperty('topic', "mitch")
+        expect(article).toHaveProperty('created_at', "2020-07-09T20:11:00.000Z")
+        expect(article).toHaveProperty('votes', 100)
+        expect(article).toHaveProperty('article_img_url', "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+    })
+    test('404: Should return "Article not found" if there are no articles matching the requested id', async () => {
+        const { body: { msg }} = await request(app)
+            .get('/api/articles/9999')
+            .expect(404)
+        expect(msg).toBe("Article not found")
+    })
+    test('400: Should return "Bad request" if the requested id is not a valid number', async () => {
+        const { body: { msg }} = await request(app)
+            .get('/api/articles/hello')
+            .expect(400)
+        expect(msg).toBe("Bad request")
+    })
+})
