@@ -4,6 +4,7 @@ const { getEndpoints } = require("./controllers/api.controllers")
 const { getArticleById, getArticles, patchArticle } = require("./controllers/articles.controllers")
 const { handleCustomErrors, handleSqlErrors } = require("./controllers/errors.controllers")
 const { getCommentsByArticleId, postCommentByArticleId, deleteComment } = require("./controllers/comments.controllers")
+const { getUsers } = require("./controllers/users.controllers")
 
 const app = express()
 
@@ -24,6 +25,8 @@ app.post('/api/articles/:article_id/comments', postCommentByArticleId)
 app.patch('/api/articles/:article_id', patchArticle)
 
 app.delete('/api/comments/:comment_id', deleteComment)
+
+app.get('/api/users', getUsers)
 
 app.use((_, res) => {
     res.status(404).send({ msg: 'Not found' })
