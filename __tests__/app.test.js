@@ -140,3 +140,44 @@ describe('/api/articles/:article_id/comments', () => {
         expect(msg).toBe("Bad request")
     })
 })
+
+describe('POST /api/articles/:article_id/comments', () => {
+    test('201: Should post a comment to the given article id and respond with the posted comment', async () => {
+        const testComment = {username: 'butter_bridge', body: 'testBody'}
+        const { body: { comment } } = await request(app)
+            .post('/api/articles/1/comments')
+            .send(testComment)
+            .expect(201)
+        expect(comment).toHaveProperty('article_id', 1)
+        expect(comment).toHaveProperty('comment_id', 19)
+        expect(comment).toHaveProperty('author', 'butter_bridge')
+        expect(comment).toHaveProperty('body', 'testBody')
+        expect(comment).toHaveProperty('votes', 0)
+        expect(comment).toHaveProperty('created_at', expect.any(String))
+    })
+    test('400: Should return "Bad request" if the requested id is not a valid number', async () => {
+        const testComment = {username: 'butter_bridge', body: 'testBody'}
+        const { body: { msg }} = await request(app)
+            .post('/api/articles/hello/comments')
+            .send(testComment)
+            .expect(400)
+        expect(msg).toBe("Bad request")
+    })
+    test('400: Should return "Invalid comment" if the posted comment does not have body and username', async () => {
+        const testComment = {body: 'testBody'}
+        const { body: { msg }} = await request(app)
+            .post('/api/articles/1/comments')
+            .send(testComment)
+            .expect(400)
+        expect(msg).toBe("Invalid comment")
+    })
+    test('404: Should return "Article not found" if there are no articles matching the requested id', async () => {
+        const testComment = {username: 'butter_bridge', body: 'testBody'}
+        const { body: { msg }} = await request(app)
+            .post('/api/articles/9999/comments')
+            .send(testComment)
+            .expect(404)
+        expect(msg).toBe('Resource not found')
+    })
+})
+
