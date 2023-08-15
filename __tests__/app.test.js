@@ -66,3 +66,33 @@ describe('/api/articles/:article_id', () => {
         expect(msg).toBe("Bad request")
     })
 })
+
+describe('/api/articles', () => {
+    test('200: Should return an array of articles', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles")
+            .expect(200)
+        expect(articles).toHaveLength(13)
+        articles.forEach(article => {
+            expect(article).toHaveProperty("author", expect.any(String))
+            expect(article).toHaveProperty("title", expect.any(String))
+            expect(article).toHaveProperty("article_id", expect.any(Number))
+            expect(article).toHaveProperty("votes", expect.any(Number))
+            expect(article).toHaveProperty("topic", expect.any(String))
+            expect(article).toHaveProperty("created_at", expect.any(String))
+            expect(article).toHaveProperty("article_img_url", expect.any(String))
+            expect(article).toHaveProperty("comment_count", expect.any(String))
+        })
+    })
+    test('200: The articles should be sorted by date in descending order', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles")
+            .expect(200)
+        articles.forEach(article => {
+            article.created_at  = Date.parse(article.created_at)
+        })
+        expect(articles).toBeSortedBy('created_at', {coerce: true, descending:true})
+    })
+})
+
+
