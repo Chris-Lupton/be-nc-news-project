@@ -171,7 +171,7 @@ describe('POST /api/articles/:article_id/comments', () => {
             .expect(400)
         expect(msg).toBe("Invalid comment")
     })
-    test('404: Should return "Article not found" if there are no articles matching the requested id', async () => {
+    test('404: Should return "Resource not found" if there are no articles matching the requested id', async () => {
         const testComment = {username: 'butter_bridge', body: 'testBody'}
         const { body: { msg }} = await request(app)
             .post('/api/articles/9999/comments')
@@ -181,3 +181,20 @@ describe('POST /api/articles/:article_id/comments', () => {
     })
 })
 
+describe('DELETE /api/comments/:comment_id', () => {
+    test('204: Should delete the comment with the given id and return no content', async () => {
+        await request(app)
+            .delete('/api/comments/1')
+            .expect(204)
+    })
+    test('400: Should return 400 if the requested id is not a valid number', async () => {
+        await request(app)
+            .delete('/api/comments/hello')
+            .expect(400)
+    })
+    test('404: Should return 404 if there are no articles matching the requested id', async () => {
+        await request(app)
+            .delete('/api/comments/9999')
+            .expect(404)
+    })
+})
