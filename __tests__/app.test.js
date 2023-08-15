@@ -121,6 +121,12 @@ describe('/api/articles/:article_id/comments', () => {
         })
         expect(comments).toBeSortedBy('created_at', {coerce: true, descending:true})
     })
+    test('200: Should return an empty array if the article id exists but there are no comments', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/2/comments")
+            .expect(200)
+        expect(comments).toEqual([])
+    })
     test('404: Should return "Article not found" if there are no articles matching the requested id', async () => {
         const { body: { msg }} = await request(app)
             .get('/api/articles/9999/comments')
