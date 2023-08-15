@@ -95,4 +95,48 @@ describe('/api/articles', () => {
     })
 })
 
+describe('/notapath', () => {
+    test('404: should return "Not found" if the requested path is not valid', async () => {
+        const { body: { msg } } = await request(app)
+            .get('/api/cats')
+            .expect(404)
+        expect(msg).toBe('Not found')
+    })
+})
 
+describe('/api/articles/:article_id/comments', () => {
+    test('200: Should return an array of comments for the given article_id sorted by newest first', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+        expect(comments).toHaveLength(11)
+        comments.forEach(comment => {
+            expect(comment).toHaveProperty("comment_id", expect.any(Number))
+            expect(comment).toHaveProperty("votes", expect.any(Number))
+            expect(comment).toHaveProperty("created_at", expect.any(String))
+            expect(comment).toHaveProperty("author", expect.any(String))
+            expect(comment).toHaveProperty("body", expect.any(String))
+            expect(comment).toHaveProperty("article_id", expect.any(Number))
+            comment.created_at = Date.parse(comment.created_at)
+        })
+        expect(comments).toBeSortedBy('created_at', {coerce: true, descending:true})
+    })
+    test('200: Should return an empty array if the article id exists but there are no comments', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/2/comments")
+            .expect(200)
+        expect(comments).toEqual([])
+    })
+    test('404: Should return "Article not found" if there are no articles matching the requested id', async () => {
+        const { body: { msg }} = await request(app)
+            .get('/api/articles/9999/comments')
+            .expect(404)
+        expect(msg).toBe("Article not found")
+    })
+    test('400: Should return "Bad request" if the requested id is not a valid number', async () => {
+        const { body: { msg }} = await request(app)
+            .get('/api/articles/hello/comments')
+            .expect(400)
+        expect(msg).toBe("Bad request")
+    })
+})
