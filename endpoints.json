@@ -60,17 +60,32 @@
   "POST /api/articles/:article_id/comments": {
     "description": "Posts a new comment to an article and returns the created comment data",
     "queries": [],
+    "exampleRequest": {"username": "butter_bridge", "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"},
     "exampleResponse": {
-      "comments": [
-        {
-          "comment_id": 1,
-          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "votes": 16,
-          "author": "butter_bridge",
-          "article_id": 9,
-          "created_at": 1586179020000
-        }
-      ]
+      "comment": {
+        "comment_id": 1,
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "votes": 16,
+        "author": "butter_bridge",
+        "article_id": 9,
+        "created_at": 1586179020000
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates the articles vote count by the amount sent",
+    "queries": [],
+    "exampleRequest": { "inc_votes": 1 },
+    "exampleResponse": {
+      "article": {
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "votes": 10,
+        "comment_count": 6
+      }
     }
   },
   "DELETE /api/comments/:comment_id": {

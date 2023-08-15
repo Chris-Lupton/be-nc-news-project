@@ -181,6 +181,42 @@ describe('POST /api/articles/:article_id/comments', () => {
     })
 })
 
+describe('PATCH /api/articles/:article_id', () => {
+    test('200: Should update the votes on the requested article_id by the given value and return the updated article', async () => {
+        const testVotes = { inc_votes: 1 }
+        const { body: { article } } = await request(app)
+            .patch("/api/articles/1")
+            .send(testVotes)
+            .expect(200)
+        expect(article).toHaveProperty("article_id", 1)
+        expect(article).toHaveProperty("votes", 101)  
+    })
+    test('400: Should return "Bad request" if the requested id is not a valid number', async () => {
+        const testVotes = { inc_votes: 1 }
+        const { body: { msg }} = await request(app)
+        .patch("/api/articles/hello")
+            .send(testVotes)
+            .expect(400)
+        expect(msg).toBe("Bad request")
+    })
+    test('400: Should return "Invalid votes" if the updated votes does not have inc_votes', async () => {
+        const testVotes = { new: 1 }
+        const { body: { msg }} = await request(app)
+            .patch("/api/articles/1")
+            .send(testVotes)
+            .expect(400)
+        expect(msg).toBe("Invalid votes")
+    })
+    test('404: Should return "Resource not found" if there are no articles matching the requested id', async () => {
+        const testVotes = { inc_votes: 1 }
+        const { body: { msg }} = await request(app)
+        .patch("/api/articles/9999")
+            .send(testVotes)
+            .expect(404)
+        expect(msg).toBe('Resource not found')
+    })
+})
+
 describe('DELETE /api/comments/:comment_id', () => {
     test('204: Should delete the comment with the given id and return no content', async () => {
         await request(app)
