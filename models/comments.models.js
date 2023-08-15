@@ -25,3 +25,11 @@ exports.addCommentById = async (id, { username, body }) => {
         return Promise.reject({status: 400, msg: 'Invalid comment'})
     }
 }
+
+exports.removeComment = async (id) => {
+    await db.query(`
+        DELETE FROM comments
+        WHERE comment_id = $1
+        `, [id])
+    
+}

@@ -60,6 +60,7 @@
   "POST /api/articles/:article_id/comments": {
     "description": "Posts a new comment to an article and returns the created comment data",
     "queries": [],
+    "exampleRequest": {"username": "butter_bridge", "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"},
     "exampleResponse": {
       "comment": {
         "comment_id": 1,
@@ -74,6 +75,7 @@
   "PATCH /api/articles/:article_id": {
     "description": "Updates the articles vote count by the amount sent",
     "queries": [],
+    "exampleRequest": { "inc_votes": 1 },
     "exampleResponse": {
       "article": {
         "title": "Seafood substitutions are increasing",
@@ -85,5 +87,8 @@
         "comment_count": 6
       }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes the comment with the given comment_id"
   }
 }

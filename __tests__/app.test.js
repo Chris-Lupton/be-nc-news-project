@@ -216,3 +216,21 @@ describe('PATCH /api/articles/:article_id', () => {
         expect(msg).toBe('Resource not found')
     })
 })
+
+describe('DELETE /api/comments/:comment_id', () => {
+    test('204: Should delete the comment with the given id and return no content', async () => {
+        await request(app)
+            .delete('/api/comments/1')
+            .expect(204)
+    })
+    test('400: Should return 400 if the requested id is not a valid number', async () => {
+        await request(app)
+            .delete('/api/comments/hello')
+            .expect(400)
+    })
+    test('404: Should return 404 if there are no articles matching the requested id', async () => {
+        await request(app)
+            .delete('/api/comments/9999')
+            .expect(404)
+    })
+})

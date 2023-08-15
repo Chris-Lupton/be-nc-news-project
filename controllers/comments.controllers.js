@@ -1,5 +1,5 @@
 const { fetchArticleById } = require("../models/articles.models")
-const { fetchCommentsById, addCommentById } = require("../models/comments.models")
+const { fetchCommentsById, addCommentById, removeComment } = require("../models/comments.models")
 const { checkExists } = require('../models/utils')
 
 exports.getCommentsByArticleId = async (request, response, next) => {
@@ -21,6 +21,19 @@ exports.postCommentByArticleId = async (request, response, next) => {
             addCommentById(article_id, body) 
         ])
         response.status(201).send({ comment })
+    } catch (err) {
+        next(err)
+    }  
+}
+
+exports.deleteComment = async (request, response, next) => {
+    const { comment_id } = request.params
+    try { 
+        await Promise.all([
+            checkExists('comments', 'comment_id', comment_id),
+            removeComment(comment_id) 
+        ])
+        response.status(204).send()
     } catch (err) {
         next(err)
     }  
