@@ -65,6 +65,13 @@ describe('/api/articles/:article_id', () => {
             .expect(400)
         expect(msg).toBe("Bad request")
     })
+    test('200: Should return the article with a total comment count', async () => {
+        const { body: { article } } = await request(app)
+            .get('/api/articles/1')
+            .expect(200)
+        expect(article).toHaveProperty('article_id', 1)
+        expect(article).toHaveProperty('comment_count', '11')
+    })
 })
 
 describe('/api/articles', () => {
