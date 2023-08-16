@@ -283,6 +283,12 @@ describe('GET /api/articles (queries)', () => {
         })
         expect(articles).toBeSortedBy('author', {ascending: true})
     })
+    test('200: Should return an empty array if the topic is valid but there are no results', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+        expect(articles).toEqual([])
+    })
     test('404: Should return "Resource not found" if given a topic that doesn\'t exist', async () => {
         const { body: { msg }} = await request(app)
             .get("/api/articles?topic=hello")

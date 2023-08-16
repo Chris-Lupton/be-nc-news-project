@@ -14,7 +14,7 @@ exports.getArticleById = async (request, response, next) => {
 exports.getArticles = async (request, response, next) => {
     const { topic, sort_by, order } = request.query
     const promises = [fetchArticles(topic, sort_by, order)]
-    if (topic) promises.push(checkExists('articles', 'topic', topic))
+    if (topic) promises.push(checkExists('topics', 'slug', topic))
     try{ 
         const [articles, _] = await Promise.all(promises)        
         response.status(200).send({ articles })
