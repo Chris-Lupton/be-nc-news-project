@@ -248,3 +248,57 @@ describe('GET /api/users', () => {
         })
     })
 })
+
+describe('GET /api/articles (queries)', () => {
+    test('200: Should filter articles by a topic given in a query', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?topic=cats")
+            .expect(200)
+        expect(articles).toHaveLength(1)
+        articles.forEach(article => {
+            expect(article.topic).toBe('cats')
+        })
+    })
+    test('200: Should sort the articles by any valid column given and default to descending', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?sort_by=title")
+            .expect(200)
+        expect(articles).toHaveLength(13)
+        expect(articles).toBeSortedBy('title', {descending: true})
+    })
+    test('200: Should sort the articles by the order given', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?sort_by=title&order=asc")
+            .expect(200)
+        expect(articles).toHaveLength(13)
+        expect(articles).toBeSortedBy('title', {ascending: true})
+    })
+    test('200: Should filter and sort the articles when given a valid topic, column and order', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?topic=mitch&sort_by=author&order=asc")
+            .expect(200)
+        expect(articles).toHaveLength(12)
+        articles.forEach(article => {
+            expect(article.topic).toBe('mitch')
+        })
+        expect(articles).toBeSortedBy('author', {ascending: true})
+    })
+    test('404: Should return "Resource not found" if given a topic that doesn\'t exist', async () => {
+        const { body: { msg }} = await request(app)
+            .get("/api/articles?topic=hello")
+            .expect(404)
+        expect(msg).toBe('Resource not found')
+    })
+    test('400: Should return "Invalid sort query" if given an invalid column to sort_by', async () => {
+        const { body: { msg }} = await request(app)
+            .get("/api/articles?sort_by=bananas")
+            .expect(400)
+        expect(msg).toBe('Invalid sort query')
+    })
+    test('400: Should return "Invalid sort query" if given an invalid order', async () => {
+        const { body: { msg }} = await request(app)
+            .get("/api/articles?order=cats")
+            .expect(400)
+        expect(msg).toBe('Invalid sort query')
+    })
+})

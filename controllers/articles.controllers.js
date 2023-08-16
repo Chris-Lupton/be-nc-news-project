@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticle, updateArticle } = require("../models/articles.models")
+const { fetchArticleById, fetchArticles, updateArticle } = require("../models/articles.models")
 const { checkExists } = require('../models/utils')
 
 exports.getArticleById = async (request, response, next) => {
@@ -12,8 +12,15 @@ exports.getArticleById = async (request, response, next) => {
 }
 
 exports.getArticles = async (request, response, next) => {
-    const articles = await fetchArticle()
-    response.status(200).send({ articles })
+    const { topic, sort_by, order } = request.query
+    const promises = [fetchArticles(topic, sort_by, order)]
+    if (topic) promises.push(checkExists('articles', 'topic', topic))
+    try{ 
+        const [articles, _] = await Promise.all(promises)        
+        response.status(200).send({ articles })
+    } catch (err) {
+        next(err)
+    }
 }
 
 exports.patchArticle = async (request, response, next) => {

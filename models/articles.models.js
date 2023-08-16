@@ -8,14 +8,29 @@ exports.fetchArticleById = async (id) => {
     return rows[0]
 }
 
-exports.fetchArticle = async () => {
-    const { rows } = await db.query(`
-            SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comment_id) AS comment_count
-            FROM articles
-            LEFT JOIN comments ON articles.article_id = comments.article_id
-            GROUP BY articles.article_id
-            ORDER BY articles.created_at DESC
-    `)
+exports.fetchArticles = async (topic, sort_by = 'created_at', order = 'desc') => {
+
+    const queries = []
+    const validSortColumns = ['title', 'topic', 'author', 'body', 'created_at']
+    const validSortOrders = ['asc', 'desc']
+
+    if(!validSortColumns.includes(sort_by) || !validSortOrders.includes(order)){
+        return Promise.reject({status: 400, msg: 'Invalid sort query'})
+    }
+
+    let baseQuery = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comment_id) AS comment_count
+                     FROM articles
+                     LEFT JOIN comments ON articles.article_id = comments.article_id `
+
+    if(topic){
+        baseQuery += `WHERE topic = $1 `
+        queries.push(topic)
+    }
+
+    baseQuery += `GROUP BY articles.article_id 
+                  ORDER BY articles.${sort_by} ${order} `
+
+    const { rows } = await db.query(baseQuery, queries)
     return rows
 }
 
