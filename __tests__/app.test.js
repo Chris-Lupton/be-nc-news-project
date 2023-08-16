@@ -234,3 +234,17 @@ describe('DELETE /api/comments/:comment_id', () => {
             .expect(404)
     })
 })
+
+describe('GET /api/users', () => {
+    test('200: Should respond with an array of all users with properties: username, name and avatar_url', async () => {
+        const { body: { users } } = await request(app)
+            .get("/api/users")
+            .expect(200)
+        expect(users).toHaveLength(4)
+        users.forEach(user => {
+            expect(user).toHaveProperty("username", expect.any(String))
+            expect(user).toHaveProperty("name", expect.any(String))
+            expect(user).toHaveProperty("avatar_url", expect.any(String))
+        })
+    })
+})
