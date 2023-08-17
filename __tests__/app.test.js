@@ -315,3 +315,20 @@ describe('GET /api/articles (queries)', () => {
         expect(msg).toBe('Invalid sort query')
     })
 })
+
+describe('GET /api/users/:username', () => {
+    test('200: Should respond with a user object with properties: username, avatar_url and name when given a valid username', async () => {
+        const { body: { user } } = await request(app)
+            .get('/api/users/butter_bridge')
+            .expect(200)
+        expect(user).toHaveProperty("username", 'butter_bridge')
+        expect(user).toHaveProperty("name", 'jonny')
+        expect(user).toHaveProperty("avatar_url", 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg')
+    })
+    test('404: Should respond with "User not found" if given a username that doesn\'t exist', async () => {
+        const { body: { msg }} = await request(app)
+        .get("/api/users/notauser")
+        .expect(404)
+    expect(msg).toBe('User not found')
+    })
+})
