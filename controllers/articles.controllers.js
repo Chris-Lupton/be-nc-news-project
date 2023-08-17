@@ -13,8 +13,8 @@ exports.getArticleById = async (request, response, next) => {
 }
 
 exports.getArticles = async (request, response, next) => {
-    const { topic, sort_by, order } = request.query
-    const promises = [fetchArticles(topic, sort_by, order)]
+    const { topic, sort_by, order, limit, p } = request.query
+    const promises = [fetchArticles(topic, sort_by, order, limit, p)]
     if (topic) promises.push(checkExists('topics', 'slug', topic))
     try{ 
         const [articles, _] = await Promise.all(promises)        
