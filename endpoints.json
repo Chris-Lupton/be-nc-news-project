@@ -26,8 +26,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "Returns an array of all articles. Defaults to sorting by date descending",
-    "queries": ["topic", "sort_by", "order"],
+    "description": "Returns an array of all articles. Defaults to sorting by date descending. Results can be limited and seperate pages requested ",
+    "queries": ["topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "articles": [
         {

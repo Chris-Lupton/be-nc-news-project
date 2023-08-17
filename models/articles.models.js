@@ -15,7 +15,7 @@ exports.fetchArticleById = async (id) => {
     return rows[0]
 }
 
-exports.fetchArticles = async (topic, sort_by = 'created_at', order = 'desc') => {
+exports.fetchArticles = async (topic, sort_by = 'created_at', order = 'desc', limit, p) => {
 
     const queries = []
     const validSortColumns = ['title', 'topic', 'author', 'body', 'created_at']
@@ -37,6 +37,12 @@ exports.fetchArticles = async (topic, sort_by = 'created_at', order = 'desc') =>
     baseQuery += `GROUP BY articles.article_id 
                   ORDER BY articles.${sort_by} ${order} `
 
+    if(/^[0-9]+$/.test(limit)){
+        baseQuery += `LIMIT ${limit} `
+        if(/^[0-9]+$/.test(p)){
+            baseQuery += `OFFSET ${limit*(p-1)}`
+        }
+    }
     const { rows } = await db.query(baseQuery, queries)
     return rows
 }

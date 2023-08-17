@@ -458,3 +458,45 @@ describe('POST /api/topics', () => {
         expect(msg).toBe('No topic given')
     })
 })
+
+describe('GET /api/articles (pagination)', () => {
+    test('200: Should accept a limit query and return the limited number of articles', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?limit=5")
+            .expect(200)
+        expect(articles).toHaveLength(5)
+        expect(articles[0]).toHaveProperty("article_id", 3)
+        expect(articles[4]).toHaveProperty("article_id", 12)
+    })
+    test('200: Should return all articles if given an invalid limit', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?limit=droptable")
+            .expect(200)
+        expect(articles).toHaveLength(13)
+        articles.forEach(article => {       
+            expect(article).toHaveProperty("article_id", expect.any(Number))
+        })
+    })
+    test('200: Should accept query p for the page to start at', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?limit=5&p=2")
+            .expect(200)
+        expect(articles).toHaveLength(5)
+        expect(articles[0]).toHaveProperty("article_id", 5)
+        expect(articles[4]).toHaveProperty("article_id", 4)
+    })
+    test('200: Should ignore an invalid p query and return the first page of articles', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?limit=5&p=hello")
+            .expect(200)
+        expect(articles).toHaveLength(5)
+        expect(articles[0]).toHaveProperty("article_id", 3)
+        expect(articles[4]).toHaveProperty("article_id", 12)
+    })
+    test('200: Should return an empty array if there are no results on the page requested', async () => {
+        const { body: { articles } } = await request(app)
+            .get("/api/articles?limit=5&p=5")
+            .expect(200)
+        expect(articles).toEqual([])
+    })
+})
