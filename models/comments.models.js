@@ -33,3 +33,18 @@ exports.removeComment = async (id) => {
         `, [id])
     
 }
+
+exports.updateComment = async (id, { inc_votes }) => {
+    if(inc_votes){
+        const { rows } = await db.query(`
+            UPDATE comments
+            SET votes = votes + $1
+            WHERE comment_id = $2
+            RETURNING *
+            `, [inc_votes, id])
+        return rows[0]
+    } else {
+        return Promise.reject({status: 400, msg: 'Invalid votes'})
+    }
+
+}

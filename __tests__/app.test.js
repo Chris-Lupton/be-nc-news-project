@@ -332,3 +332,39 @@ describe('GET /api/users/:username', () => {
     expect(msg).toBe('User not found')
     })
 })
+
+describe('PATCH /api/comments/:comment_id', () => {
+    test('200: Should update the votes on the requested comment_id by the given value and return the updated comment', async () => {
+        const testVotes = { inc_votes: 1 }
+        const { body: { comment } } = await request(app)
+            .patch("/api/comments/1")
+            .send(testVotes)
+            .expect(200)
+        expect(comment).toHaveProperty("comment_id", 1)
+        expect(comment).toHaveProperty("votes", 17)  
+    })
+    test('400: Should return "Bad request" if the requested id is not a valid number', async () => {
+        const testVotes = { inc_votes: 1 }
+        const { body: { msg }} = await request(app)
+        .patch("/api/comments/notacomment")
+            .send(testVotes)
+            .expect(400)
+        expect(msg).toBe("Bad request")
+    })
+    test('400: Should return "Invalid votes" if the updated votes does not have inc_votes', async () => {
+        const testVotes = { new: 1 }
+        const { body: { msg }} = await request(app)
+            .patch("/api/comments/1")
+            .send(testVotes)
+            .expect(400)
+        expect(msg).toBe("Invalid votes")
+    })
+    test('404: Should return "Resource not found" if there are no comments matching the requested id', async () => {
+        const testVotes = { inc_votes: 1 }
+        const { body: { msg }} = await request(app)
+        .patch("/api/comments/9999")
+            .send(testVotes)
+            .expect(404)
+        expect(msg).toBe('Resource not found')
+    })
+})
