@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const format = require('pg-format')
 
 exports.fetchArticleById = async (id) => {
     const { rows } = await db.query(`
@@ -51,6 +52,23 @@ exports.updateArticle = async (id, { inc_votes }) => {
         return rows[0]
     } else {
         return Promise.reject({status: 400, msg: 'Invalid votes'})
+    }
+}
+
+exports.addArticle = async ({ title, body, author, topic }) => {
+    if( title && body && author && topic ){
+
+        const articleToAdd = format(`
+        INSERT INTO articles (title, topic, author, body)
+        VALUES %L
+        RETURNING article_id
+        `, [[title, topic, author, body]])
+
+        const { rows } =  await db.query(articleToAdd)
+        return rows[0].article_id
+
+    } else {
+        return Promise.reject({status: 422, msg: 'Missing article data'})
     }
 
 }

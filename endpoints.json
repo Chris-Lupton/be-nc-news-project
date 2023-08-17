@@ -125,5 +125,28 @@
         "created_at": 1586179020000
       }
     }
+  },
+  "POST /api/topics":{
+    "description": "Posts a new topic, description is optional",
+    "exampleRequest": { "topic": "New_Topic", "description": "New_description" },
+    "exampleResponse": {
+      "topic": { "slug": "New_Topic", "description": "New_description" }
+    }
+  },
+  "POST /api/articles":{
+    "description": "Posts a new article",
+    "exampleRequest": {"author": "butter_bridge", "title": "example", "body": "example text", "topic": "cats"},
+    "exampleResponse": {
+      "article": {
+        "article_id" : 1,
+        "title": "example",
+        "topic": "cats",
+        "author": "butter_bridge",
+        "body": "example text",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "votes": 0,
+        "comment_count": 0
+      }
+    }
   }
 }

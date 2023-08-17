@@ -368,3 +368,93 @@ describe('PATCH /api/comments/:comment_id', () => {
         expect(msg).toBe('Resource not found')
     })
 })
+
+describe('POST /api/articles', () => {
+    test('201: Should post a new article to the database if given valid data and return the added article', async () => {
+        const testArticle = {author: 'butter_bridge', title: 'testTitle', body: 'testBody', topic: 'cats'}
+        const { body: { article } } = await request(app)
+            .post('/api/articles/')
+            .send(testArticle)
+            .expect(201)
+        expect(article).toHaveProperty('article_id', 14)
+        expect(article).toHaveProperty('author', 'butter_bridge')
+        expect(article).toHaveProperty('title', 'testTitle')
+        expect(article).toHaveProperty('body', 'testBody')
+        expect(article).toHaveProperty('topic', 'cats')
+        expect(article).toHaveProperty('votes', 0)
+        expect(article).toHaveProperty('comment_count', '0')
+        expect(article).toHaveProperty('created_at', expect.any(String))
+    })
+    test('201: Should post a new article and create a new topic if the topic given is not already in topics', async () => {
+        const testArticle = {author: 'butter_bridge', title: 'testTitle', body: 'testBody', topic: 'new_topic'}
+        const { body: { article, topic }} = await request(app)
+            .post('/api/articles')
+            .send(testArticle)
+            .expect(201)
+        expect(article).toHaveProperty('author', 'butter_bridge')
+        expect(article).toHaveProperty('article_id', 14)
+        expect(topic).toHaveProperty('slug', 'new_topic')
+        expect(topic).toHaveProperty('description', null )
+    })
+    test('422: Should respond with "Missing article data" if the post request is missing title', async () => {
+        const testArticle = {author: 'butter_bridge', body: 'testBody', topic: 'new_topic'}
+        const { body: { msg }} = await request(app)
+            .post('/api/articles')
+            .send(testArticle)
+            .expect(422)
+        expect(msg).toBe("Missing article data")
+    })
+    test('422: Should respond with "Missing article data" if the post request is missing body', async () => {
+        const testArticle = {author: 'butter_bridge', title: 'testTitle', topic: 'new_topic'}
+        const { body: { msg }} = await request(app)
+            .post('/api/articles')
+            .send(testArticle)
+            .expect(422)
+        expect(msg).toBe("Missing article data")
+    })
+    test('422: Should respond with "Missing topic" if topic is not given', async () => {
+        const testArticle = {author: 'butter_bridge', title: 'testTitle', body: 'testBody'}
+        const { body: { msg }} = await request(app)
+            .post('/api/articles')
+            .send(testArticle)
+            .expect(422)
+        expect(msg).toBe("Missing topic")
+    })
+    test('404: Should respond with "User not found" if author is not given or does not exist in users table', async () => {
+        const testArticle = {author: 'not_a_user', title: 'testTitle', body: 'testBody', topic: 'new_topic'}
+        const { body: { msg }} = await request(app)
+            .post('/api/articles')
+            .send(testArticle)
+            .expect(404)
+        expect(msg).toBe("User not found")
+    })
+})
+
+describe('POST /api/topics', () => {
+    test('201: Should post a new topic if given a slug without description', async () => {
+        const testTopic = { topic: 'testTopic' }
+        const { body: { topic }} = await request(app)
+            .post('/api/topics')
+            .send(testTopic)
+            .expect(201)
+        expect(topic).toHaveProperty('slug', 'testTopic')
+        expect(topic).toHaveProperty('description', null )
+    })
+    test('201: Should post a new topic if given a slug with a description', async () => {
+        const testTopic = { topic: 'testTopic2', description: 'test_description' }
+        const { body: { topic }} = await request(app)
+            .post('/api/topics')
+            .send(testTopic)
+            .expect(201)
+        expect(topic).toHaveProperty('slug', 'testTopic2')
+        expect(topic).toHaveProperty('description', 'test_description')
+    })
+    test('400: Should respond with "No topic given" is the topic is not defined', async () => {
+        const testTopic = {description: 'test_description' }
+        const { body: { msg }} = await request(app)
+            .post('/api/topics')
+            .send(testTopic)
+            .expect(400)
+        expect(msg).toBe('No topic given')
+    })
+})
