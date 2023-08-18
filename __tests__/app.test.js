@@ -551,3 +551,31 @@ describe('GET /api/articles/:article_id/comments (pagination)', () => {
         expect(comments).toEqual([])
     })
 })
+
+describe('DELETE /api/articles/:article_id', () => {
+    test('204: Should delete an article at the given id and all its comments', async () => {
+        await request(app)
+            .delete('/api/articles/1')
+            .expect(204)
+        const articles = await db.query(`SELECT * FROM articles`)
+        const comments = await db.query(`SELECT * FROM comments`)
+        articles.rows.forEach(article => {
+            expect(article).not.toHaveProperty('article_id', 1)
+        })
+        comments.rows.forEach(comment => {
+            expect(comment).not.toHaveProperty('article_id', 1)
+        })
+    })
+    test('400: Should respond with "Bad request" if the requested article_id is not a valid number', async () => {
+        const { body: { msg }} = await request(app)
+            .delete('/api/articles/hello')
+            .expect(400)
+        expect(msg).toBe('Bad request')
+    })
+    test('404: Should respond with "Resource not found" if there are no articles matching the requested id', async () => {
+        const { body: { msg }} = await request(app)
+            .delete('/api/articles/9999')
+            .expect(404)
+        expect(msg).toBe('Resource not found')
+    })
+})

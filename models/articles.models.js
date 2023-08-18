@@ -76,5 +76,16 @@ exports.addArticle = async ({ title, body, author, topic }) => {
     } else {
         return Promise.reject({status: 422, msg: 'Missing article data'})
     }
+}
 
+exports.removeArticle = async (id) => {
+    await db.query(`
+        DELETE FROM comments
+        WHERE article_id = $1
+        `, [id])
+
+    await db.query(`
+        DELETE FROM articles
+        WHERE article_id = $1
+        `, [id])
 }
