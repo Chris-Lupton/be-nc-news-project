@@ -112,11 +112,11 @@ describe('/notapath', () => {
 })
 
 describe('/api/articles/:article_id/comments', () => {
-    test('200: Should return an array of comments for the given article_id sorted by newest first', async () => {
+    test('200: Should return an array of comments for the given article_id sorted by newest first(limit to 10 results by default)', async () => {
         const { body: { comments } } = await request(app)
             .get("/api/articles/1/comments")
             .expect(200)
-        expect(comments).toHaveLength(11)
+        expect(comments).toHaveLength(10)
         comments.forEach(comment => {
             expect(comment).toHaveProperty("comment_id", expect.any(Number))
             expect(comment).toHaveProperty("votes", expect.any(Number))
@@ -498,5 +498,56 @@ describe('GET /api/articles (pagination)', () => {
             .get("/api/articles?limit=5&p=5")
             .expect(200)
         expect(articles).toEqual([])
+    })
+})
+
+describe('GET /api/articles/:article_id/comments (pagination)', () => {
+    test('200: Should accept a limit query and return the limited number of comments', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/1/comments?limit=5")
+            .expect(200)
+        expect(comments).toHaveLength(5)
+        expect(comments[0]).toHaveProperty("comment_id", 5)
+        expect(comments[4]).toHaveProperty("comment_id", 7)
+    })
+    test('200: Should return a default of 10 comments if no limit given', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+        expect(comments).toHaveLength(10)
+        comments.forEach(comment => {       
+            expect(comment).toHaveProperty("comment_id", expect.any(Number))
+        })
+    })
+    test('200: Should return all comments if given an invalid limit', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/1/comments?limit=hello")
+            .expect(200)
+        expect(comments).toHaveLength(11)
+        comments.forEach(comment => {       
+            expect(comment).toHaveProperty("comment_id", expect.any(Number))
+        })
+    })
+    test('200: Should accept query p for the page to start at', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/1/comments?limit=5&p=2")
+            .expect(200)
+        expect(comments).toHaveLength(5)
+        expect(comments[0]).toHaveProperty("comment_id", 8)
+        expect(comments[4]).toHaveProperty("comment_id", 4)
+    })
+    test('200: Should ignore an invalid p query and return the first page of articles', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/1/comments?limit=5&p=bananas")
+            .expect(200)
+        expect(comments).toHaveLength(5)
+        expect(comments[0]).toHaveProperty("comment_id", 5)
+        expect(comments[4]).toHaveProperty("comment_id", 7)
+    })
+    test('200: Should return an empty array if there are no results on the page requested', async () => {
+        const { body: { comments } } = await request(app)
+            .get("/api/articles/1/comments?limit=5&p=5")
+            .expect(200)
+        expect(comments).toEqual([])
     })
 })

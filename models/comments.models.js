@@ -1,13 +1,21 @@
 const db = require('../db/connection')
 const format = require('pg-format')
 
-exports.fetchCommentsById = async (id) => {
-    const { rows } = await db.query(`
+exports.fetchCommentsById = async (id, limit = 10, p) => {
+    let baseQuery = `
         SELECT comment_id, votes, created_at, author, body, article_id
         FROM comments
         WHERE article_id = $1
-        ORDER BY created_at DESC
-        `,[id])
+        ORDER BY created_at DESC `
+
+    if(/^[0-9]+$/.test(limit)){
+        baseQuery += `LIMIT ${limit} `
+        if(/^[0-9]+$/.test(p)){
+            baseQuery += `OFFSET ${limit*(p-1)}`
+        }
+    }
+
+    const { rows } = await db.query(baseQuery,[id])
     return rows
 }
 

@@ -43,8 +43,8 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of all comments. Defaults to sorting by date descending",
-    "queries": [],
+    "description": "serves an array of all comments. Defaults to sorting by date descending and limit 10 results",
+    "queries": ["limit", "p"],
     "exampleResponse": {
       "comments": [
         {
