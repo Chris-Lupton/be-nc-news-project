@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticles, updateArticle, addArticle } = require("../models/articles.models")
+const { fetchArticleById, fetchArticles, updateArticle, addArticle, removeArticle } = require("../models/articles.models")
 const { addTopic } = require("../models/topics.models")
 const { checkExists } = require('../models/utils')
 
@@ -57,6 +57,19 @@ exports.postArticle = async (request, response, next) => {
                 response.status(422).send({ msg: 'Missing topic' })
             }
         }
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.deleteArticle = async (request, response, next) => {
+    const { article_id } = request.params
+    try{
+        await Promise.all([
+            checkExists('articles', 'article_id', article_id),
+            removeArticle(article_id)
+        ])
+        response.status(204).send()
     } catch (err) {
         next(err)
     }

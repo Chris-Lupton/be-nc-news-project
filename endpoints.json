@@ -148,5 +148,8 @@
         "comment_count": 0
       }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "Deletes the article and all associated comments with the given article_id"
   }
 }
