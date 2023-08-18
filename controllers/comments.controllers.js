@@ -3,9 +3,10 @@ const { fetchCommentsById, addCommentById, removeComment, updateComment } = requ
 const { checkExists } = require('../models/utils')
 
 exports.getCommentsByArticleId = async (request, response, next) => {
+    const { limit, p } = request.query
     const { article_id } = request.params
     try{
-        const [comments, _] = await Promise.all([fetchCommentsById(article_id), fetchArticleById(article_id)])
+        const [comments, _] = await Promise.all([fetchCommentsById(article_id, limit, p), fetchArticleById(article_id)])
         response.status(200).send({ comments })
     } catch (err) {
         next(err)
