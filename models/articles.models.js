@@ -15,7 +15,7 @@ exports.fetchArticleById = async (id) => {
     return rows[0]
 }
 
-exports.fetchArticles = async (topic, sort_by = 'created_at', order = 'desc', limit, p) => {
+exports.fetchArticles = async (topic, sort_by = 'created_at', order = 'desc', limit = 10, p) => {
 
     const queries = []
     const validSortColumns = ['title', 'topic', 'author', 'body', 'created_at']

@@ -75,11 +75,11 @@ describe('/api/articles/:article_id', () => {
 })
 
 describe('/api/articles', () => {
-    test('200: Should return an array of articles', async () => {
+    test('200: Should return an array of articles, default to limit 10', async () => {
         const { body: { articles } } = await request(app)
             .get("/api/articles")
             .expect(200)
-        expect(articles).toHaveLength(13)
+        expect(articles).toHaveLength(10)
         articles.forEach(article => {
             expect(article).toHaveProperty("author", expect.any(String))
             expect(article).toHaveProperty("title", expect.any(String))
