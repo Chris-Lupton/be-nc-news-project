@@ -257,7 +257,7 @@ describe('GET /api/users', () => {
 })
 
 describe('GET /api/articles (queries)', () => {
-    test('200: Should filter articles by a topic given in a query', async () => {
+    test('200: Should filter articles by a topic given in a query default to limit 10', async () => {
         const { body: { articles } } = await request(app)
             .get("/api/articles?topic=cats")
             .expect(200)
@@ -270,21 +270,21 @@ describe('GET /api/articles (queries)', () => {
         const { body: { articles } } = await request(app)
             .get("/api/articles?sort_by=title")
             .expect(200)
-        expect(articles).toHaveLength(13)
+        expect(articles).toHaveLength(10)
         expect(articles).toBeSortedBy('title', {descending: true})
     })
     test('200: Should sort the articles by the order given', async () => {
         const { body: { articles } } = await request(app)
             .get("/api/articles?sort_by=title&order=asc")
             .expect(200)
-        expect(articles).toHaveLength(13)
+        expect(articles).toHaveLength(10)
         expect(articles).toBeSortedBy('title', {ascending: true})
     })
     test('200: Should filter and sort the articles when given a valid topic, column and order', async () => {
         const { body: { articles } } = await request(app)
             .get("/api/articles?topic=mitch&sort_by=author&order=asc")
             .expect(200)
-        expect(articles).toHaveLength(12)
+        expect(articles).toHaveLength(10)
         articles.forEach(article => {
             expect(article.topic).toBe('mitch')
         })
