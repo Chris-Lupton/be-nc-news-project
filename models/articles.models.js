@@ -18,7 +18,7 @@ exports.fetchArticleById = async (id) => {
 exports.fetchArticles = async (topic, sort_by = 'created_at', order = 'desc', limit = 10, p) => {
 
     const queries = []
-    const validSortColumns = ['title', 'topic', 'author', 'body', 'created_at']
+    const validSortColumns = ['title', 'topic', 'author', 'body', 'created_at', 'votes', 'comment_count']
     const validSortOrders = ['asc', 'desc']
 
     if(!validSortColumns.includes(sort_by) || !validSortOrders.includes(order)){
