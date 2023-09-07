@@ -34,8 +34,13 @@ exports.fetchArticles = async (topic, sort_by = 'created_at', order = 'desc', li
         queries.push(topic)
     }
 
-    baseQuery += `GROUP BY articles.article_id 
-                  ORDER BY articles.${sort_by} ${order} `
+    baseQuery += `GROUP BY articles.article_id `
+
+    if(sort_by === 'comment_count'){
+        baseQuery += `ORDER BY comment_count ${order} `
+    } else {
+        baseQuery += `ORDER BY articles.${sort_by} ${order} `
+    }
 
     if(/^[0-9]+$/.test(limit)){
         baseQuery += `LIMIT ${limit} `
