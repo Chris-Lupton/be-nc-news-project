@@ -579,3 +579,42 @@ describe('DELETE /api/articles/:article_id', () => {
         expect(msg).toBe('Resource not found')
     })
 })
+
+describe('POST /api/users', () => {
+    test('201: Should post a new user to the database and return the added user', async () => {
+        const testUser = {username: 'test user', name: 'test name', avatar_url: 'test avatar'}
+        const { body: { user } } = await request(app)
+            .post('/api/users')
+            .send(testUser)
+            .expect(201)
+        expect(user).toHaveProperty('username', 'test user')
+        expect(user).toHaveProperty('name', 'test name')
+        expect(user).toHaveProperty('avatar_url', 'test avatar')
+    })
+    test('201: Should post a new user to the database and return the added user, with default avatar if not given', async () => {
+        const testUser = {username: 'test user', name: 'test name'}
+        const { body: { user } } = await request(app)
+            .post('/api/users')
+            .send(testUser)
+            .expect(201)
+        expect(user).toHaveProperty('username', 'test user')
+        expect(user).toHaveProperty('name', 'test name')
+        expect(user).toHaveProperty('avatar_url', 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg?size=626&ext=jpg&ga=GA1.1.1598835678.1696346653&semt=ais')
+    })
+    test('400: Should respond with "No name given" is the name is not defined', async () => {
+        const testUser = {username: 'test user', avatar_url: 'test avatar'}
+        const { body: { msg }} = await request(app)
+            .post('/api/users')
+            .send(testUser)
+            .expect(400)
+        expect(msg).toBe('No name given')
+    })
+    test('400: Should respond with "No name given" is the username is not defined', async () => {
+        const testUser = {name: 'test name', avatar_url: 'test avatar'}
+        const { body: { msg }} = await request(app)
+            .post('/api/users')
+            .send(testUser)
+            .expect(400)
+        expect(msg).toBe('No name given')
+    })
+})
